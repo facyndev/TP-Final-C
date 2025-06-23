@@ -21,8 +21,10 @@ int menu()
     return opcion;
 }
 
-/* Funcion que recibe un array de tipo number y valida una serie de condiciones, si no estan correcto, va a generar un bucle hasta que los datos sean correctos.
-validar_dni(->array[NUMBER])-> VOID
+/*
+    Funcion que recibe un array de tipo char (string) y valida una serie de condiciones, si no estan correcto, va a generar un bucle hasta que los datos sean correctos.
+    Devuelve 1 en caso de error y 0 en caso de exito.
+    validar_dni(->array[string]) -> number
 */
 int validar_dni(char dni[9])
 {
@@ -39,12 +41,13 @@ int validar_dni(char dni[9])
         char primerosDigitos[] = {dni[0], dni[1], '\0'};
         int contador = 10;
         char stringConvertido[3];
+        // Funcion para convertir un dato numerico a un dato tipo char (string)
         sprintf(stringConvertido, "%d", contador);
         while (contador < 60 && strcmp(primerosDigitos, stringConvertido) != 0)
         {
-            sprintf(stringConvertido, "%d", contador);
-            estadoError = 1;
             contador++;
+            estadoError = 1;
+            sprintf(stringConvertido, "%d", contador);
         }
 
         // Verificar cuando corta el while si realmente salio porque la cadena son iguales.
@@ -76,7 +79,7 @@ int validar_dni(char dni[9])
     Funcion para validar que el dato ingresado sea unicamente un numero, es decir que no contenga caracteres.
     Devuelve 1 en caso de error y 0 en caso de exito.
 
-    - validar_numero(->array[STRING])->number
+    - validar_numero(->array[string]) -> number
 */
 int validar_numero(char numero[])
 {
@@ -103,9 +106,11 @@ int validar_caracteres(char caracteres[])
 {
     int longitudCaracteres = strlen(caracteres);
     int estadoError = 0;
+    // Codigo ASCII de la letra ñ
+    int ascii = 164;
     for (int i = 0; i < longitudCaracteres; i++)
     {
-        if (isalpha(caracteres[i]) == 0)
+        if (isalpha(caracteres[i]) == 0 && caracteres[i] == ascii)
         {
             estadoError = 1;
         }
@@ -134,7 +139,7 @@ int validar_codigos(char codigo[])
     return estadoError;
 }
 /*
-    Funcion para vincular el destino con su respectivo importe.
+    Funcion que determina el importe final por pasajero y ademas descuenta la capacidad de cada destino.
 
     definir_importe(->array[string])-> number
 */
@@ -167,20 +172,23 @@ int definir_importe(char codigo[], int metodoPago, char edad[])
     }
 
     // En caso de que el pasajero abona con tarjeta de credito
-    if(metodoPago == 1) { 
+    if (metodoPago == 1)
+    {
         precio += precio * 0.05;
     }
 
     // Para los niños menores a 5 años deberan abonar un seguro.
-    if(edadConvertida < 5) {
+    if (edadConvertida < 5)
+    {
         precio += seguroMenores;
     }
-    
+
     return precio;
 }
 
-/* Funcion que recibe varios tres cadenas de caracter, dos arrays de numeros y un numero, se le pide al usuario que ingrese una serie de datos
-carga_datos(->array[STRING],->array[STRING], array[STRING], array[NUMBER], NUMBER, array[NUMBER])->VOID
+/*
+    Funcion que recibe varios tres cadenas de caracter, dos arrays de numeros y un numero, se le pide al usuario que ingrese una serie de datos
+    carga_datos(->array[STRING],->array[STRING], array[STRING], array[NUMBER], NUMBER, array[NUMBER])->VOID
 */
 void carga_datos(char apellidos[][10], char nombres[][10], char codigosDestinos[][4], char documentos[][9], int cantPasajeros, char edades[][3], float preciosPasajes[])
 {
@@ -219,7 +227,7 @@ void carga_datos(char apellidos[][10], char nombres[][10], char codigosDestinos[
             scanf("%s", apellidos[i]);
             if (validar_caracteres(apellidos[i]) == 1)
             {
-                printf("Error: El apellido debe contener solo caracteres.");
+                printf("Error: El apellido debe contener solo caracteres.\n");
             }
         } while (validar_caracteres(apellidos[i]) == 1);
 
@@ -247,67 +255,86 @@ void carga_datos(char apellidos[][10], char nombres[][10], char codigosDestinos[
                 printf("Error: El codigo de destino no se encuentra en la agencia.\n");
             }
         } while (validar_caracteres(codigosDestinos[i]) == 1 || validar_codigos(codigosDestinos[i]) == 1);
-        
+
         printf("¿Como desea abonar?\n");
         do
         {
             printf("1. Tarjeta de credito.\n2. Tarjeta de debito.\n3. Efectivo\n4. Transferencia\n");
             printf("Ingrese una opcion: ");
             scanf("%i", &metodoPago);
-            if(metodoPago < 1 || metodoPago > 4) {
+            if (metodoPago < 1 || metodoPago > 4)
+            {
                 printf("Error: La opcion ingresada no es valida.\n");
             }
         } while (metodoPago < 1 || metodoPago > 4);
-        
+
         preciosPasajes[i] = definir_importe(codigosDestinos[i], metodoPago, edades[i]);
     }
 }
 
-/* Funcion que toma un array de numeros, y solo ordena los numeros de menor a mayor
-ORDEMANIENTO(->NUMBER)->VOID
-*/
-void ordenamiento(int arr[60])
-{
-    int min, aux;
-    int length = sizeof(arr) / sizeof(arr[0]);
-    for (int i = 0; i < length - 1; i++)
-    {
-        min = i;
-        for (int j = 0; j < length; j++)
-        {
-            if (arr[j] < arr[min])
-            {
-                min = j;
-            }
-        }
-
-        if (min != i)
-        {
-            aux = arr[i];
-            arr[i] = arr[min];
-            arr[min] = aux;
-        }
-    }
-}
-
 /*
-    Funcion que toma una cadena de caracteres y su longitud, y solo ordena la cadena de forma Alfabetica
+    Funcion para ordenamiento alfabetico por apellido. Ademas ordena sus datos aliados correspondientes,
+    como los son el nombre, codigo destino, DNI.
+
     ORDEMANIENTO_STRING(->array[STRING], ->NUMBER)->VOID
 */
-void ordenamiento_string(char nombres[][10], int n)
+void ordenamiento_por_apellidos(char apellidos[][10], char nombres[][10], char codigosDestinos[][4], char documentos[][9], char edades[][3], int n)
 {
     for (int i = 0; i < n - 1; i++)
     {
         for (int j = 0; j < n - i - 1; j++)
         {
-            if (strcmp(nombres[j], nombres[j + 1]) > 0)
+            char tempApellido[10], tempNombre[10], tempCodigo[4], tempEdades[3], tempDocumentos[9];
+            if (strcmp(apellidos[j], apellidos[j + 1]) > 0)
             {
-                char temp[10];
-                strcpy(temp, nombres[j]);
+                // Apellido
+                strcpy(tempApellido, apellidos[j]);
+                strcpy(apellidos[j], apellidos[j + 1]);
+                strcpy(apellidos[j + 1], tempApellido);
+
+                // Nombre
+                strcpy(tempNombre, nombres[j]);
                 strcpy(nombres[j], nombres[j + 1]);
-                strcpy(nombres[j + 1], temp);
+                strcpy(nombres[j + 1], tempNombre);
+
+                // Codigo destino
+                strcpy(tempCodigo, codigosDestinos[j]);
+                strcpy(codigosDestinos[j], codigosDestinos[j + 1]);
+                strcpy(codigosDestinos[j + 1], tempCodigo);
+
+                // Edades
+                strcpy(tempEdades, edades[j]);
+                strcpy(edades[j], edades[j + 1]);
+                strcpy(edades[j + 1], tempEdades);
             }
         }
+    }
+}
+
+void mostrarPasajerosPorApellidos(char apellidos[][10], char nombres[][10], char codigosDestinos[][4], char documentos[][9], char edades[][3], int n)
+{
+    printf("%d\n", n);
+    printf("-- Lista de pasajeros --\n\n");
+    ordenamiento_por_apellidos(apellidos, nombres, codigosDestinos, documentos, edades, n);
+    for (int i = 0; i < n; i++)
+    {
+        printf("Nombre: %s\n", nombres[i]);
+        printf("Apellido: %s\n", apellidos[i]);
+        printf("DNI: %s\n", documentos[i]);
+        printf("Edad: %s\n", edades[i]);
+        if (strcmp(codigosDestinos[i], "BRA") == 0) {
+            printf("Destino seleccionado: Brasil");
+        }
+        else if (strcmp(codigosDestinos[i], "MDQ") == 0) {
+            printf("Destino seleccionado: Mar del Plata");
+        }
+        else if (strcmp(codigosDestinos[i], "MZA") == 0) {
+            printf("Destino seleccionado: Mendoza");
+        }
+        else if (strcmp(codigosDestinos[i], "BRC") == 0) {
+            printf("Destino seleccionado: Bariloche");
+        }
+        printf("\n-------------------\n");
     }
 }
 
@@ -335,19 +362,7 @@ int main()
         switch (opcion)
         {
         case 1:
-            printf("%d\n", cantPasajeros);
-            printf("---Ordenado\n\n");
-            // ordenamiento_string(nombres, cantPasajeros);
-            for (int i = 0; i < cantPasajeros; i++)
-            {
-                printf("Nombre: %s\n", nombres[i]);
-                printf("Apellido: %s\n", apellidos[i]);
-                printf("Edad: %s\n", edades[i]);
-                printf("DNI: %s\n", documentos[i]);
-                printf("Destino: %s\n", codigosDestinos[i]);
-                printf("Precio del destino: $%.2f\n\n", preciosPasajes[i]);
-            }
-            printf("-------------------\n\n");
+            mostrarPasajerosPorApellidos(apellidos, nombres, codigosDestinos, documentos, edades, cantPasajeros);
             break;
         case 2:
             printf("2");
@@ -370,5 +385,6 @@ int main()
             break;
         }
     }
+
     return 0;
 }
