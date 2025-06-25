@@ -3,9 +3,14 @@
 #include <string.h>
 #include <ctype.h>
 
+#define COLOR_ROJO "\x1b[31m"
+#define COLOR_VERDE "\x1b[32m"
+#define COLOR_VERDE_AGUA "\x1b[36m"
+#define COLOR_BLANCO "\x1b[0m"
+
 // Variables Globales
 int capacidadDestinos[4] = {60, 60, 60, 60};
-int importePasajeroDestino[4] = {25000, 14000, 19000, 23000};
+float importePasajeroDestino[] = {25000, 14000, 19000, 23000};
 char codigosDestinosValidos[][4] = {"BRA", "MDQ", "MZA", "BRC"};
 float porcentajesMenoresDestinos[] = {0, 0, 0, 0};
 
@@ -16,8 +21,8 @@ MENU()-> NUMBER
 int menu()
 {
     int opcion;
-    printf("1. Mostar lista de pasajeros ordenada por Apellido y Nombre\n2. Mostrar lista de pasajeros ordenada por Codigo Destino y Apellido-Nombre\n3. Mostrar lista de Destinos\n4. Buscar por Pasajero\n5. Mostrar estadisticas\n6. Salir\n");
-    printf("Ingrese una opcion: ");
+    printf(COLOR_VERDE_AGUA "\n1. Mostar lista de pasajeros ordenada por Apellido y Nombre\n2. Mostrar lista de pasajeros ordenada por Codigo Destino y Apellido-Nombre\n3. Mostrar lista de Destinos\n4. Buscar por Pasajero\n5. Mostrar estadisticas\n6. Salir\n" COLOR_BLANCO);
+    printf("-> Ingrese una opcion: ");
     scanf("%d", &opcion);
     return opcion;
 }
@@ -107,11 +112,9 @@ int validar_caracteres(char caracteres[])
 {
     int longitudCaracteres = strlen(caracteres);
     int estadoError = 0;
-    // Codigo ASCII de la letra ñ
-    int ascii = 164;
     for (int i = 0; i < longitudCaracteres; i++)
     {
-        if (isalpha(caracteres[i]) == 0 && caracteres[i] == ascii)
+        if (isalpha(caracteres[i]) == 0)
         {
             estadoError = 1;
         }
@@ -224,89 +227,93 @@ void carga_datos(char apellidos[][10], char nombres[][10], char codigosDestinos[
     int estadoNumero, estadoDNI, estadoCaracteres, estadoCapacidad, estadoCodigo;
     for (int i = 0; i < cantPasajeros; i++)
     {
-        printf("Pasajero N%i\n\n", i + 1);
+        printf(COLOR_VERDE "\n-- PASAJERO N%i --\n\n" COLOR_BLANCO, i + 1);
 
         do
         {
-            printf("Ingrese su DNI (sin puntos): ");
+            printf("-> Ingrese su DNI (sin puntos): ");
             scanf("%s", documentos[i]);
             estadoNumero = validar_numero(documentos[i]);
             estadoDNI = validar_dni(documentos[i]);
             if (estadoNumero == 1)
             {
-                printf("Error: El D.N.I debe debe contener solo numeros.\n");
+                printf(COLOR_ROJO "Error: El D.N.I debe debe contener solo numeros.\n" COLOR_BLANCO);
             }
             else if (estadoDNI == 1)
             {
-                printf("Error: El D.N.I debe comenzar con 5 o 6 en caso de tener 7 digitos.\nEn caso de tener 8 digitos, debe comenzar con numero que se encuentre entre 10 y 60.\n");
+                printf(COLOR_ROJO "Error: El D.N.I debe contener 7 u 8 digitos.\n\n-> 7 Digitos: Debe comenzar con 5 o 6.\n-> 8 Digitos: Debe comenzar con un numero entre 10 y 60.\n" COLOR_BLANCO);
             }
         } while (estadoNumero == 1 || estadoDNI == 1);
 
         do
         {
-            printf("Ingrese su nombre: ");
+            printf("-> Ingrese su nombre: ");
             scanf("%s", nombres[i]);
             estadoCaracteres = validar_caracteres(nombres[i]);
             if (estadoCaracteres == 1)
             {
-                printf("Error: El nombre debe contener solo caracteres.");
+                printf(COLOR_ROJO "Error: El nombre debe contener solo caracteres.\n" COLOR_BLANCO);
             }
         } while (estadoCaracteres == 1);
 
         do
         {
-            printf("Ingrese su apellido: ");
+            printf("-> Ingrese su apellido: ");
             scanf("%s", apellidos[i]);
             estadoCaracteres = validar_caracteres(apellidos[i]);
             if (estadoCaracteres == 1)
             {
-                printf("Error: El apellido debe contener solo caracteres.\n");
+                printf(COLOR_ROJO "Error: El apellido debe contener solo caracteres.\n" COLOR_BLANCO);
             }
         } while (estadoCaracteres == 1);
 
         do
         {
-            printf("Ingrese su edad: ");
+            printf("-> Ingrese su edad: ");
             scanf(" %s", edades[i]);
             estadoNumero = validar_numero(edades[i]);
             if (estadoNumero == 1)
             {
-                printf("Error: La edad solo debe contener solo numeros.\n");
+                printf(COLOR_ROJO "Error: La edad solo debe contener solo numeros.\n" COLOR_BLANCO);
             }
         } while (estadoNumero == 1);
 
-        printf("Destino: Brasil - Codigo: BRA\nDestino: Mar del Plata - Codigo: MDQ\nDestino: Mendoza - Codigo: MZA\nDestino: Bariloche - Codigo: BRC\n\n");
+        printf(COLOR_VERDE_AGUA "\n| Codigo destino |        Destino       | Importe por pasajero\t|\n");
+        printf("|\tBRA\t |       Brasil       \t|       $%.2f    \t|\n", importePasajeroDestino[0]);
+        printf("|\tMDQ\t |    Mar del plata\t|       $%.2f    \t|\n", importePasajeroDestino[1]);
+        printf("|\tMZA\t |       Mendoza      \t|       $%.2f    \t|\n", importePasajeroDestino[2]);
+        printf("|\tBRC\t |      Bariloche    \t|       $%.2f    \t|\n\n" COLOR_BLANCO, importePasajeroDestino[3]);
 
         do
         {
-            printf("Ingrese el codigo del destino: ");
+            printf("-> Ingrese el codigo del destino: ");
             scanf("%s", codigosDestinos[i]);
             estadoCaracteres = validar_caracteres(codigosDestinos[i]);
             estadoCapacidad = descontar_pasajeros(codigosDestinos[i]);
             estadoCodigo = validar_codigos(codigosDestinos[i]);
             if (estadoCaracteres == 1)
             {
-                printf("Error: El codigo de destino debe contener solo caracteres.\n");
+                printf(COLOR_ROJO "Error: El codigo de destino debe contener solo caracteres.\n" COLOR_BLANCO);
             }
             else if (estadoCodigo == 1)
             {
-                printf("Error: El codigo de destino no se encuentra en la agencia.\n");
+                printf(COLOR_ROJO "Error: El codigo de destino no se encuentra en la agencia.\n" COLOR_BLANCO);
             }
             else if (estadoCapacidad == 1)
             {
-                printf("Error: La capacidad del destino esta llena. Debes seleccionar otro destino.\n");
+                printf(COLOR_ROJO "Error: La capacidad del destino esta llena. Debes seleccionar otro destino.\n" COLOR_BLANCO);
             }
         } while (estadoCaracteres == 1 || estadoCodigo == 1 || estadoCapacidad == 1);
 
-        printf("%cComo desea abonar?\n", 168);
+        printf(COLOR_VERDE_AGUA "\n%cComo desea abonar?\n", 168);
         do
         {
-            printf("1. Tarjeta de credito.\n2. Tarjeta de debito.\n3. Efectivo\n4. Transferencia\n");
-            printf("Ingrese una opcion: ");
+            printf(COLOR_VERDE_AGUA "1. Tarjeta de credito.\n2. Tarjeta de debito.\n3. Efectivo\n4. Transferencia\n" COLOR_BLANCO);
+            printf("-> Ingrese una opcion: ");
             scanf("%i", &metodoPago);
             if (metodoPago < 1 || metodoPago > 4)
             {
-                printf("Error: La opcion ingresada no es valida.\n");
+                printf(COLOR_ROJO "Error: La opcion ingresada no es valida.\n" COLOR_BLANCO);
             }
         } while (metodoPago < 1 || metodoPago > 4);
 
@@ -363,7 +370,6 @@ void ordenamiento_por_apellidos(char apellidos[][10], char nombres[][10], char c
         }
     }
 }
-
 
 /*
     Funcion para ordenamiento alfabetico por codigos y luego ordenamiento alfabetico de apellidos de cada codigo. Ademas ordena sus datos aliados correspondientes,
@@ -449,27 +455,29 @@ void ordenamiento_por_codigo_apellido(char apellidos[][10], char nombres[][10], 
 
 void mostrar_pasajeros_por_apellidos(char apellidos[][10], char nombres[][10], char codigosDestinos[][4], char documentos[][9], char edades[][3], float preciosPasajes[], int n)
 {
-    printf("-- Lista de pasajeros (ordenada por apellidos) --\n\n");
+    printf(COLOR_VERDE "-- LISTA DE PASAJEROS --\n\n" COLOR_BLANCO);
+    printf("Ordenada por apellidos.\n");
+    printf("-------------------\n");
     for (int i = 0; i < n; i++)
     {
-        printf("Apellido y Nombre: %s %s\n", apellidos[i], nombres[i]);
+        printf(COLOR_VERDE "Apellido y Nombre: %s %s\n", apellidos[i], nombres[i]);
         printf("DNI: %s\n", documentos[i]);
         printf("Edad: %s\n", edades[i]);
         if (strcmp(codigosDestinos[i], "BRA") == 0)
         {
-            printf("Destino seleccionado: Brasil");
+            printf("Destino seleccionado: Brasil" COLOR_BLANCO);
         }
         else if (strcmp(codigosDestinos[i], "MDQ") == 0)
         {
-            printf("Destino seleccionado: Mar del Plata");
+            printf("Destino seleccionado: Mar del Plata" COLOR_BLANCO);
         }
         else if (strcmp(codigosDestinos[i], "MZA") == 0)
         {
-            printf("Destino seleccionado: Mendoza");
+            printf("Destino seleccionado: Mendoza" COLOR_BLANCO);
         }
         else if (strcmp(codigosDestinos[i], "BRC") == 0)
         {
-            printf("Destino seleccionado: Bariloche");
+            printf("Destino seleccionado: Bariloche" COLOR_BLANCO);
         }
         printf("\n-------------------\n");
     }
@@ -477,13 +485,15 @@ void mostrar_pasajeros_por_apellidos(char apellidos[][10], char nombres[][10], c
 
 void mostrar_pasajeros_por_codigosyapellidos(char apellidos[][10], char nombres[][10], char codigosDestinos[][4], char documentos[][9], char edades[][3], float preciosPasajes[], int n)
 {
-    printf("-- Lista de pasajeros (ordenada por codigo y apellido-nombre) --\n\n");
+    printf(COLOR_VERDE "-- LISTA DE PASAJEROS --\n\n" COLOR_BLANCO);
+    printf("Ordenada por codigos y apellido-nombre.\n");
+    printf("-------------------\n");
     for (int i = 0; i < n; i++)
     {
-        printf("Codigo destino: %s\n", codigosDestinos[i]);
+        printf(COLOR_VERDE "Codigo destino: %s\n", codigosDestinos[i]);
         printf("Apellido y nombre: %s %s\n", apellidos[i], nombres[i]);
         printf("DNI: %s\n", documentos[i]);
-        printf("Edad: %s\n", edades[i]);
+        printf("Edad: %s" COLOR_BLANCO, edades[i]);
         printf("\n-------------------\n");
     }
 }
@@ -512,34 +522,40 @@ void mostrar_lista_destinos(char codigosDestinos[][4], int capacidadDestinos[], 
         }
     }
 
+    printf(COLOR_VERDE "-- DESTINOS --\n\n" COLOR_BLANCO);
+    printf("-------------------\n");
     for (int i = 0; i < 4; i++)
     {
-        printf("Codigo de Destino: %s\n", codigosDestinosValidos[i]);
+        printf(COLOR_VERDE "Codigo de Destino: %s\n", codigosDestinosValidos[i]);
         printf("Cantidad Pasajeros del destino: %d\n", 60 - capacidadDestinos[i]);
-        printf("Importe Total del destino: $%.2f", importesAcumuladosDestino[i]);
+        printf("Importe Total del destino: $%.2f" COLOR_BLANCO, importesAcumuladosDestino[i]);
         importeTotal += importesAcumuladosDestino[i];
         printf("\n-------------------\n");
     }
-    printf("\nImporte Total de los destinos: $%.2f\n\n", importeTotal);
+    printf(COLOR_VERDE "\nImporte Total de los destinos: $%.2f\n\n" COLOR_BLANCO, importeTotal);
 }
 
+/*
+    Funcion para buscar un pasajero a traves de su DNI
+    Devuelve la posicion en caso de ser encontrado y -1 en caso de no.
+*/
 int buscar_pasajero_dni(char documentos[][9], int cantidadPasajeros)
 {
     int estadoNumero, estadoDNI;
     char doc[9];
     do
     {
-        printf("Ingrese su DNI (sin puntos): ");
+        printf("-> Ingrese su DNI (sin puntos): ");
         scanf("%s", doc);
         estadoNumero = validar_numero(doc);
         estadoDNI = validar_dni(doc);
         if (estadoNumero == 1)
         {
-            printf("Error: El D.N.I debe debe contener solo numeros.\n");
+            printf(COLOR_ROJO "Error: El D.N.I debe debe contener solo numeros.\n" COLOR_BLANCO);
         }
         else if (estadoDNI == 1)
         {
-            printf("Error: El D.N.I debe comenzar con 5 o 6 en caso de tener 7 digitos.\nEn caso de tener 8 digitos, debe comenzar con numero que se encuentre entre 10 y 60.\n");
+            printf(COLOR_ROJO "Error: El D.N.I debe contener 7 u 8 digitos.\n\n-> 7 Digitos: Debe comenzar con 5 o 6.\n-> 8 Digitos: Debe comenzar con un numero entre 10 y 60.\n" COLOR_BLANCO);
         }
     } while (estadoNumero == 1 || estadoDNI == 1);
 
@@ -562,12 +578,28 @@ int buscar_pasajero_dni(char documentos[][9], int cantidadPasajeros)
     return posicionDocumento;
 }
 
-void mostrar_datos_pasajeros(int posicion, char edades[][3], char apellidos[][10], char nombres[][10], char codigosDestinos[][4], float precioPasajes[])
+void mostrar_datos_pasajero(int posicion, char apellidos[][10], char nombres[][10], char codigosDestinos[][4], float precioPasajes[])
 {
-    printf("Apellido y Nombre: %s %s\n", apellidos[posicion], nombres[posicion]);
-    printf("Edad: %s\n", edades[posicion]);
-    printf("Codigo Destino: %s\n", codigosDestinos[posicion]);
-    printf("Precio del destino: $%.2f\n", precioPasajes[posicion]);
+    printf(COLOR_BLANCO "\n-------------------\n");
+    printf(COLOR_VERDE "Apellido y Nombre: %s %s\n", apellidos[posicion], nombres[posicion]);
+    if (strcmp(codigosDestinos[posicion], "BRA") == 0)
+    {
+        printf("Destino seleccionado: Brasil\n");
+    }
+    else if (strcmp(codigosDestinos[posicion], "MDQ") == 0)
+    {
+        printf("Destino seleccionado: Mar del Plata\n");
+    }
+    else if (strcmp(codigosDestinos[posicion], "MZA") == 0)
+    {
+        printf("Destino seleccionado: Mendoza\n");
+    }
+    else if (strcmp(codigosDestinos[posicion], "BRC") == 0)
+    {
+        printf("Destino seleccionado: Bariloche\n");
+    }
+    printf("Precio del destino: $%.2f" COLOR_BLANCO, precioPasajes[posicion]);
+    printf("\n-------------------\n");
 }
 
 void mostrar_estadisticas(char edades[][3], char codigosDestinos[][4], int cantidadPasajeros)
@@ -576,121 +608,117 @@ void mostrar_estadisticas(char edades[][3], char codigosDestinos[][4], int canti
     int capacidadDestinoMenor = capacidadDestinos[0];
     int posicionDestinoMasSolicitado = 0;
 
+    float porcentajeMenores = 0;
+    int contadorMenores = 0;
+    int edadConvertida = 0;
     for (int i = 0; i < 4; i++)
     {
-        float porcentajeMenores = 0;
-        int contadorMenores = 0;
-        int contadorPasajerosDestino = 0;
-        int edadConvertida = 0;
-        float porcentajePasajeros = ((60 - capacidadDestinos[i]) * 100) / 60;
+        int cantidadOcupadaPasajeros = 60 - capacidadDestinos[i];
+        float porcentajePasajeros = (cantidadOcupadaPasajeros * 100) / 60;
+        printf(COLOR_BLANCO"\n-------------------\n");
         if (i == 0)
         {
-            printf("Brasil\n\n");
-            printf("Porcentaje de pasajeros: %%%.2f\n", porcentajePasajeros);
-            for (int j = 0; j < cantidadPasajeros; j++)
-            {
-                if (strcmp(codigosDestinos[j], "BRA") == 0)
-                {
-                    contadorPasajerosDestino++;
-                }
-                edadConvertida = atoi(edades[j]);
-                if (edadConvertida < 5)
-                {
-                    contadorMenores++;
+            printf(COLOR_VERDE "Destino: Brasil\n");
+            printf("Porcentaje total: %%%.2f de 60 pasajeros.\n", porcentajePasajeros);
+
+            for(int j = 0; j < cantidadPasajeros; j++) {
+                if(strcmp(codigosDestinos[j], "BRA") == 0) {
+                    edadConvertida = atoi(edades[j]);
+                    if (edadConvertida < 5)
+                    {
+                        contadorMenores++;
+                    }
                 }
             }
 
-            // Evitar la division por 0, para evitar errores 0
-            if (contadorPasajerosDestino != 0)
+            // Evitar la division por 0, para evitar errores
+            if (cantidadOcupadaPasajeros != 0)
             {
-                porcentajeMenores = (contadorMenores * 100) / contadorPasajerosDestino;
+                porcentajeMenores = (contadorMenores * 100) / cantidadOcupadaPasajeros;
             }
             else
             {
                 porcentajeMenores = 0;
             }
-            printf("Porcentaje de menores: %%%.2f\n", porcentajeMenores);
+            printf("Porcentaje de menores: %%%.2f de %i pasajeros." COLOR_BLANCO, porcentajeMenores, cantidadOcupadaPasajeros);
         }
         else if (i == 1)
         {
-            printf("Mar del Plata\n\n");
-            printf("Porcentaje de pasajeros: %%%.2f\n", porcentajePasajeros);
-            for (int j = 0; j < cantidadPasajeros; j++)
-            {
-                if (strcmp(codigosDestinos[j], "MDQ") == 0)
-                {
-                    contadorPasajerosDestino++;
-                }
-                edadConvertida = atoi(edades[j]);
-                if (edadConvertida < 5)
-                {
-                    contadorMenores++;
+            printf(COLOR_VERDE "Destino: Mar del Plata\n");
+            printf("Porcentaje total: %%%.2f de 60 pasajeros.\n", porcentajePasajeros);
+
+            for(int j = 0; j < cantidadPasajeros; j++) {
+                if(strcmp(codigosDestinos[j], "MDQ") == 0) {
+                    edadConvertida = atoi(edades[j]);
+                    if (edadConvertida < 5)
+                    {
+                        contadorMenores++;
+                    }
                 }
             }
-            // Evitar la division por 0, para evitar errores 0
-            if (contadorPasajerosDestino != 0)
+
+            // Evitar la division por 0, para evitar errores
+            if (cantidadOcupadaPasajeros != 0)
             {
-                porcentajeMenores = (contadorMenores * 100) / contadorPasajerosDestino;
+                porcentajeMenores = (contadorMenores * 100) / cantidadOcupadaPasajeros;
             }
             else
             {
                 porcentajeMenores = 0;
             }
-            printf("Porcentaje de menores: %%%.2f\n", porcentajeMenores);
+            printf("Porcentaje de menores: %%%.2f de %i pasajeros." COLOR_BLANCO, porcentajeMenores, cantidadOcupadaPasajeros);
         }
         else if (i == 2)
         {
-            printf("Mendoza\n\n");
-            printf("Porcentaje de pasajeros: %%%.2f \n", porcentajePasajeros);
-            for (int j = 0; j < cantidadPasajeros; j++)
-            {
-                if (strcmp(codigosDestinos[j], "MZA") == 0)
-                {
-                    contadorPasajerosDestino++;
-                }
-                edadConvertida = atoi(edades[j]);
-                if (edadConvertida < 5)
-                {
-                    contadorMenores++;
+            printf(COLOR_VERDE "Destino: Mendoza\n");
+            printf("Porcentaje total: %%%.2f de 60 pasajeros.\n", porcentajePasajeros);
+
+            for(int j = 0; j < cantidadPasajeros; j++) {
+                if(strcmp(codigosDestinos[j], "MZA") == 0) {
+                    edadConvertida = atoi(edades[j]);
+                    if (edadConvertida < 5)
+                    {
+                        contadorMenores++;
+                    }
                 }
             }
-            // Evitar la division por 0, para evitar errores 0
-            if (contadorPasajerosDestino != 0)
+
+            // Evitar la division por 0, para evitar errores
+            if (cantidadOcupadaPasajeros != 0)
             {
-                porcentajeMenores = (contadorMenores * 100) / contadorPasajerosDestino;
+                porcentajeMenores = (contadorMenores * 100) / cantidadOcupadaPasajeros;
             }
             else
             {
                 porcentajeMenores = 0;
             }
-            printf("Porcentaje de menores: %%%.2f\n", porcentajeMenores);
+            printf("Porcentaje de menores: %%%.2f de %i pasajeros." COLOR_BLANCO, porcentajeMenores, cantidadOcupadaPasajeros);
         }
         else if (i == 3)
         {
-            printf("Bariloche\n\n");
-            printf("Porcentaje de pasajeros: %%%.2f\n", porcentajePasajeros);
-            for (int j = 0; j < cantidadPasajeros; j++)
-            {
-                if (strcmp(codigosDestinos[j], "BRC") == 0)
-                {
-                    contadorPasajerosDestino++;
-                }
-                edadConvertida = atoi(edades[j]);
-                if (edadConvertida < 5)
-                {
-                    contadorMenores++;
+            printf(COLOR_VERDE "Destino: Bariloche\n");
+            printf("Porcentaje total: %%%.2f de 60 pasajeros.\n", porcentajePasajeros);
+
+            for(int j = 0; j < cantidadPasajeros; j++) {
+                if(strcmp(codigosDestinos[j], "BRC") == 0) {
+                    edadConvertida = atoi(edades[j]);
+                    if (edadConvertida < 5)
+                    {
+                        contadorMenores++;
+                    }
                 }
             }
-            // Evitar la division por 0, para evitar errores 0
-            if (contadorPasajerosDestino != 0)
+
+            // Evitar la division por 0, para evitar errores
+            if (cantidadOcupadaPasajeros != 0)
             {
-                porcentajeMenores = (contadorMenores * 100) / contadorPasajerosDestino;
+                porcentajeMenores = (contadorMenores * 100) / cantidadOcupadaPasajeros;
             }
             else
             {
                 porcentajeMenores = 0;
             }
-            printf("Porcentaje de menores: %%%.2f\n", porcentajeMenores);
+            printf("Porcentaje de menores: %%%.2f de %i pasajeros." COLOR_BLANCO, porcentajeMenores, cantidadOcupadaPasajeros);
         }
 
         if (capacidadDestinos[i] < capacidadDestinoMenor)
@@ -698,32 +726,44 @@ void mostrar_estadisticas(char edades[][3], char codigosDestinos[][4], int canti
             capacidadDestinoMenor = capacidadDestinos[i];
             posicionDestinoMasSolicitado = i;
         }
-    }
 
+        // Restablecer los valores independiente para cada destino
+        porcentajeMenores = 0;
+        contadorMenores = 0;
+    }
+    printf(COLOR_BLANCO"\n-------------------\n\n");
     if (posicionDestinoMasSolicitado == 0)
     {
-        printf("Destino mas solicitado: Brasil\n");
+        printf(COLOR_VERDE "Destino mas solicitado: Brasil\n" COLOR_BLANCO);
     }
     else if (posicionDestinoMasSolicitado == 1)
     {
-        printf("Destino mas solicitado: Mar de Plata\n");
+        printf(COLOR_VERDE "Destino mas solicitado: Mar de Plata\n" COLOR_BLANCO);
     }
     else if (posicionDestinoMasSolicitado == 2)
     {
-        printf("Destino mas solicitado: Mendoza\n");
+        printf(COLOR_VERDE "Destino mas solicitado: Mendoza\n" COLOR_BLANCO);
     }
     else if (posicionDestinoMasSolicitado == 3)
     {
-        printf("Destino mas solicitado: Bariloche\n");
+        printf(COLOR_VERDE "Destino mas solicitado: Bariloche\n" COLOR_BLANCO);
     }
 }
 
 int main()
 {
-    printf("----- Bienvenidos a Viaje Magico -----\n\n");
+    printf(COLOR_VERDE "\n\n----- BIENVENIDOS A VIAJE MAGICO -----\n\n" COLOR_BLANCO);
     int cantPasajeros;
-    printf("Por favor, ingrese la cantidad de pasajeros: ");
-    scanf("%d", &cantPasajeros);
+    do
+    {
+        printf("-> Ingrese la cantidad de pasajeros: ");
+        scanf("%d", &cantPasajeros);
+        if (cantPasajeros <= 0)
+        {
+            printf(COLOR_ROJO "Error: La cantidad de pasajeros debe ser un valor positivo.\n" COLOR_BLANCO);
+        }
+    } while (cantPasajeros <= 0);
+
     char edades[cantPasajeros][3];
     char documentos[cantPasajeros][9];
     char apellidos[cantPasajeros][10];
@@ -758,22 +798,22 @@ int main()
             posicionPasajeroEncontrado = buscar_pasajero_dni(documentos, cantPasajeros);
             if (posicionPasajeroEncontrado < 0)
             {
-                printf("Error: No existe pasajero con ese D.N.I.\n");
+                printf(COLOR_ROJO "Error: No existe pasajero con ese D.N.I.\n" COLOR_BLANCO);
             }
             else
             {
-                mostrar_datos_pasajeros(posicionPasajeroEncontrado, edades, apellidos, nombres, codigosDestinos, preciosPasajes);
+                mostrar_datos_pasajero(posicionPasajeroEncontrado, apellidos, nombres, codigosDestinos, preciosPasajes);
             }
             break;
         case 5:
             mostrar_estadisticas(edades, codigosDestinos, cantPasajeros);
             break;
         case 6:
-            printf("Muchas gracias por utilizar nuestro programa. Nos vemos pronto");
+            printf(COLOR_VERDE "Muchas gracias por utilizar nuestro programa. Nos vemos pronto" COLOR_BLANCO);
             estadoPrograma = 0;
             break;
         default:
-            printf("Error: La opcion ingresada no es valida.\n");
+            printf(COLOR_ROJO "Error: La opcion ingresada no es valida.\n" COLOR_BLANCO);
             break;
         }
     }

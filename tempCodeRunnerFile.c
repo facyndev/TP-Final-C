@@ -1,1 +1,1 @@
-codigosDestinosValidos
+capacidadDestinos
