@@ -237,7 +237,7 @@ void carga_datos(char apellidos[][10], char nombres[][10], char codigosDestinos[
             estadoDNI = validar_dni(documentos[i]);
             if (estadoNumero == 1)
             {
-                printf(COLOR_ROJO "Error: El D.N.I debe debe contener solo numeros.\n" COLOR_BLANCO);
+                printf(COLOR_ROJO "Error: El D.N.I debe contener solo numeros.\n" COLOR_BLANCO);
             }
             else if (estadoDNI == 1)
             {
@@ -274,7 +274,7 @@ void carga_datos(char apellidos[][10], char nombres[][10], char codigosDestinos[
             estadoNumero = validar_numero(edades[i]);
             if (estadoNumero == 1)
             {
-                printf(COLOR_ROJO "Error: La edad solo debe contener solo numeros.\n" COLOR_BLANCO);
+                printf(COLOR_ROJO "Error: La edad solo debe contener numeros.\n" COLOR_BLANCO);
             }
         } while (estadoNumero == 1);
 
@@ -453,7 +453,7 @@ void ordenamiento_por_codigo_apellido(char apellidos[][10], char nombres[][10], 
     }
 }
 
-void mostrar_pasajeros_por_apellidos(char apellidos[][10], char nombres[][10], char codigosDestinos[][4], char documentos[][9], char edades[][3], float preciosPasajes[], int n)
+void mostrar_pasajeros_por_apellidos(char apellidos[][10], char nombres[][10], char codigosDestinos[][4], char documentos[][9], char edades[][3], int n)
 {
     printf(COLOR_VERDE "-- LISTA DE PASAJEROS --\n\n" COLOR_BLANCO);
     printf("Ordenada por apellidos.\n");
@@ -483,7 +483,7 @@ void mostrar_pasajeros_por_apellidos(char apellidos[][10], char nombres[][10], c
     }
 }
 
-void mostrar_pasajeros_por_codigosyapellidos(char apellidos[][10], char nombres[][10], char codigosDestinos[][4], char documentos[][9], char edades[][3], float preciosPasajes[], int n)
+void mostrar_pasajeros_por_codigosyapellidos(char apellidos[][10], char nombres[][10], char codigosDestinos[][4], char documentos[][9], char edades[][3], int n)
 {
     printf(COLOR_VERDE "-- LISTA DE PASAJEROS --\n\n" COLOR_BLANCO);
     printf("Ordenada por codigos y apellido-nombre.\n");
@@ -551,7 +551,7 @@ int buscar_pasajero_dni(char documentos[][9], int cantidadPasajeros)
         estadoDNI = validar_dni(doc);
         if (estadoNumero == 1)
         {
-            printf(COLOR_ROJO "Error: El D.N.I debe debe contener solo numeros.\n" COLOR_BLANCO);
+            printf(COLOR_ROJO "Error: El D.N.I debe contener solo numeros.\n" COLOR_BLANCO);
         }
         else if (estadoDNI == 1)
         {
@@ -785,11 +785,11 @@ int main()
         {
         case 1:
             ordenamiento_por_apellidos(apellidos, nombres, codigosDestinos, documentos, edades, preciosPasajes, cantPasajeros);
-            mostrar_pasajeros_por_apellidos(apellidos, nombres, codigosDestinos, documentos, edades, preciosPasajes, cantPasajeros);
+            mostrar_pasajeros_por_apellidos(apellidos, nombres, codigosDestinos, documentos, edades, cantPasajeros);
             break;
         case 2:
             ordenamiento_por_codigo_apellido(apellidos, nombres, codigosDestinos, documentos, edades, preciosPasajes, cantPasajeros);
-            mostrar_pasajeros_por_codigosyapellidos(apellidos, nombres, codigosDestinos, documentos, edades, preciosPasajes, cantPasajeros);
+            mostrar_pasajeros_por_codigosyapellidos(apellidos, nombres, codigosDestinos, documentos, edades, cantPasajeros);
             break;
         case 3:
             mostrar_lista_destinos(codigosDestinos, capacidadDestinos, preciosPasajes, cantPasajeros);
