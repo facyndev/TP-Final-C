@@ -12,7 +12,6 @@
 int capacidadDestinos[4] = {60, 60, 60, 60};
 float importePasajeroDestino[] = {25000, 14000, 19000, 23000};
 char codigosDestinosValidos[][4] = {"BRA", "MDQ", "MZA", "BRC"};
-float porcentajesMenoresDestinos[] = {0, 0, 0, 0};
 
 /*Funcion que imprime las opciones del menu y devuelve la opcion seleccionada en un tipo entero.
 MENU()-> NUMBER
